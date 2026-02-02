@@ -1,14 +1,31 @@
 "use client";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { signOut } from "next-auth/react";
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     await signIn("credentials", { email, password });
+
+        const result = await signIn("credentials", {
+    email,
+    password,
+    redirect: false,
+    });
+
+    if (!result?.ok) {
+    setError("Invalid email or password");
+    } else {
+    window.location.href = "/dashboard";
+    }
+
   }
 
   return (
@@ -33,6 +50,15 @@ export default function LoginPage() {
           Login
         </button>
       </form>
+      {error && <p className="text-red-500">{error}</p>}
+            <button
+        onClick={() => signOut({ callbackUrl: "/login" })}
+        className="bg-red-500 text-white px-4 py-2 rounded"
+        >
+        Logout
+        </button>
+
     </div>
+
   );
 }
