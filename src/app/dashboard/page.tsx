@@ -2,6 +2,31 @@
 
 import { useState } from "react";
 
+import { useEffect } from "react";
+
+type Transaction = {
+  id: string;
+  amount: number;
+  category: string;
+  type: "INCOME" | "EXPENSE";
+  date: string;
+  description?: string;
+};
+
+const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+useEffect(() => {
+  async function loadTransactions() {
+    const res = await fetch("/api/transactions");
+    if (res.ok) {
+      const data = await res.json();
+      setTransactions(data);
+    }
+  }
+  loadTransactions();
+}, []);
+
+
 export default function DashboardPage() {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
@@ -79,6 +104,16 @@ export default function DashboardPage() {
       <button className="bg-blue-500 text-white px-4 py-2 rounded">
         Add
       </button>
+        <ul className="mt-6">
+    {transactions.map((t) => (
+        <li key={t.id} className="border-b py-2">
+        <strong>{t.category}</strong> — {t.amount} ({t.type})
+        </li>
+    ))}
+    </ul>
+
     </form>
+
+    
   );
 }

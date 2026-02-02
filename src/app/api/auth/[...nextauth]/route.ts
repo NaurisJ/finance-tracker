@@ -3,6 +3,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
+import bcrypt from "bcrypt";
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
@@ -14,17 +15,35 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        // validate
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
 
+        // find user
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
 
-        // For MVP, skip hashing for now 
-        if (user && user.password === credentials.password) {
-          return user;
+        if (!user) {
+          return null;
         }
-        return null;
+
+        // compare password with hash
+        const isValidPassword = await bcrypt.compare(
+          credentials.password,
+          user.passwordHash
+        );
+
+        if (!isValidPassword) {
+          return null;
+        }
+
+        // return user object
+        return {
+          id: user.id,
+          email: user.email,
+        };
       },
     }),
   ],
