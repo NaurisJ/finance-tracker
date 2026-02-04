@@ -1,8 +1,11 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
+import { requireAuth, unauthorizedJson } from "@/lib/auth";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  return NextResponse.json(session);
+  try {
+    const session = await requireAuth();
+    return NextResponse.json(session);
+  } catch {
+    return unauthorizedJson();
+  }
 }

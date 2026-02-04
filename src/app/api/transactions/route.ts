@@ -1,6 +1,5 @@
-﻿import { getServerSession } from "next-auth";
-import { TransactionType } from "@prisma/client";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+﻿import { TransactionType } from "@prisma/client";
+import { getUserIdOrNull, unauthorizedJson } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -47,15 +46,14 @@ function validateTransactionBody(body: CreateTransactionBody) {
 }
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const userId = await getUserIdOrNull();
+  if (!userId) {
+    return unauthorizedJson();
   }
 
   const transactions = await prisma.transaction.findMany({
     where: {
-      userId: session.user.id,
+      userId,
     },
     orderBy: {
       createdAt: "desc",
@@ -66,10 +64,9 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const userId = await getUserIdOrNull();
+  if (!userId) {
+    return unauthorizedJson();
   }
 
   let body: CreateTransactionBody;
@@ -89,7 +86,7 @@ export async function POST(req: Request) {
   const transaction = await prisma.transaction.create({
     data: {
       ...result.data,
-      userId: session.user.id,
+      userId,
     },
   });
 

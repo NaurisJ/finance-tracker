@@ -1,6 +1,5 @@
-﻿import { getServerSession } from "next-auth";
-import { TransactionType } from "@prisma/client";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+﻿import { TransactionType } from "@prisma/client";
+import { getUserIdOrNull, unauthorizedJson } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -105,16 +104,11 @@ function validateUpdateBody(body: unknown) {
   return { data: updates };
 }
 
-async function getUserId() {
-  const session = await getServerSession(authOptions);
-  return session?.user?.id;
-}
-
 export async function GET(_req: Request, { params }: RouteContext) {
-  const userId = await getUserId();
+  const userId = await getUserIdOrNull();
 
   if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return unauthorizedJson();
   }
 
   const { id } = await params;
@@ -134,10 +128,10 @@ export async function GET(_req: Request, { params }: RouteContext) {
 }
 
 export async function PATCH(req: Request, { params }: RouteContext) {
-  const userId = await getUserId();
+  const userId = await getUserIdOrNull();
 
   if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return unauthorizedJson();
   }
 
   const { id } = await params;
@@ -177,10 +171,10 @@ export async function PATCH(req: Request, { params }: RouteContext) {
 }
 
 export async function DELETE(_req: Request, { params }: RouteContext) {
-  const userId = await getUserId();
+  const userId = await getUserIdOrNull();
 
   if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return unauthorizedJson();
   }
 
   const { id } = await params;
