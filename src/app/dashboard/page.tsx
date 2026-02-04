@@ -1,8 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
-
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type Transaction = {
   id: string;
@@ -10,51 +8,80 @@ type Transaction = {
   category: string;
   type: "INCOME" | "EXPENSE";
   date: string;
-  description?: string;
+  description?: string | null;
 };
 
-const [transactions, setTransactions] = useState<Transaction[]>([]);
-
-useEffect(() => {
-  async function loadTransactions() {
-    const res = await fetch("/api/transactions");
-    if (res.ok) {
-      const data = await res.json();
-      setTransactions(data);
-    }
-  }
-  loadTransactions();
-}, []);
-
-
 export default function DashboardPage() {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loadError, setLoadError] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
-  const [type, setType] = useState("EXPENSE");
+  const [type, setType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
 
+  useEffect(() => {
+    async function loadTransactions() {
+      try {
+        const res = await fetch("/api/transactions");
+
+        if (!res.ok) {
+          setLoadError("Could not load transactions.");
+          return;
+        }
+
+        const data = (await res.json()) as Transaction[];
+        setTransactions(data);
+      } catch {
+        setLoadError("Could not load transactions.");
+      }
+    }
+
+    loadTransactions();
+  }, []);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setSubmitError("");
+    setIsSubmitting(true);
 
-    await fetch("/api/transactions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        amount: Number(amount),
-        category,
-        type,
-        date,
-        description,
-      }),
-    });
+    try {
+      const res = await fetch("/api/transactions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: Number(amount),
+          category,
+          type,
+          date,
+          description,
+        }),
+      });
 
-    setAmount("");
-    setCategory("");
-    setDate("");
-    setDescription("");
+      const data = (await res.json()) as Transaction | { error: string };
+
+      if (!res.ok || "error" in data) {
+        setSubmitError(
+          "error" in data ? data.error : "Failed to create transaction."
+        );
+        return;
+      }
+
+      setTransactions((current) => [data, ...current]);
+      setAmount("");
+      setCategory("");
+      setDate("");
+      setDescription("");
+    } catch {
+      setSubmitError("Failed to create transaction.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -79,7 +106,7 @@ export default function DashboardPage() {
 
       <select
         value={type}
-        onChange={(e) => setType(e.target.value)}
+        onChange={(e) => setType(e.target.value as "INCOME" | "EXPENSE")}
         className="border p-2 w-full mb-2"
       >
         <option value="EXPENSE">Expense</option>
@@ -101,19 +128,23 @@ export default function DashboardPage() {
         className="border p-2 w-full mb-2"
       />
 
-      <button className="bg-blue-500 text-white px-4 py-2 rounded">
-        Add
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Adding..." : "Add"}
       </button>
-        <ul className="mt-6">
-    {transactions.map((t) => (
-        <li key={t.id} className="border-b py-2">
-        <strong>{t.category}</strong> — {t.amount} ({t.type})
-        </li>
-    ))}
-    </ul>
 
+      {submitError && <p className="text-red-500 mt-3">{submitError}</p>}
+      {loadError && <p className="text-red-500 mt-3">{loadError}</p>}
+
+      <ul className="mt-6">
+        {transactions.map((transaction) => (
+          <li key={transaction.id} className="border-b py-2">
+            <strong>{transaction.category}</strong> - {transaction.amount} ({transaction.type})
+          </li>
+        ))}
+      </ul>
     </form>
-
-    
   );
 }
