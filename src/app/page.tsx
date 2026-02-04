@@ -1,65 +1,98 @@
-import Image from "next/image";
+﻿import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="min-h-screen px-6 py-12 md:px-10">
+      <div className="container">
+        <nav className="flex items-center justify-between">
+          <div className="text-lg font-semibold">FlowLedger</div>
+          <div className="flex items-center gap-4 text-sm text-[var(--text-muted)]">
+            <Link href="/login" className="transition hover:text-white">Log in</Link>
+            <Link
+              href="/register"
+              className="rounded-full bg-[var(--accent)] px-4 py-2 font-semibold text-white shadow-[0_8px_18px_rgba(79,140,255,0.35)] transition hover:bg-[var(--accent-2)]"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+              Create account
+            </Link>
+          </div>
+        </nav>
+
+        <section className="mt-10 grid gap-10 lg:grid-cols-[1.2fr_0.8fr] section-tint blue">
+          <div className="glass p-8 md:p-12">
+            <span className="tag">Finance OS</span>
+            <h1 className="mt-5 text-4xl font-semibold leading-tight md:text-5xl">
+              A calm command center for your cash flow.
+            </h1>
+            <p className="mt-4 text-lg text-[var(--text-muted)]">
+              Capture income and expenses, edit entries fast, and see your balance update in real time.
+            </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/register"
+                className="rounded-xl bg-[var(--accent)] px-6 py-3 text-center text-white transition hover:bg-[var(--accent-2)]"
+              >
+                Get started
+              </Link>
+              <Link
+                href="/login"
+                className="rounded-xl border border-[var(--border)] px-6 py-3 text-center text-[var(--text)] transition hover:border-[var(--accent)]"
+              >
+                See your dashboard
+              </Link>
+            </div>
+          </div>
+
+          <div className="glass p-8">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-[var(--text-muted)]">Monthly overview</p>
+              <span className="text-xs text-[var(--text-muted)]">Updated 2h ago</span>
+            </div>
+            <div className="mt-6">
+              <p className="text-3xl font-semibold">$4,230.10</p>
+              <p className="text-sm text-[var(--text-muted)]">Current balance</p>
+            </div>
+            <div className="mt-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--text-muted)]">Income</span>
+                <span className="text-sm text-[var(--success)]">$8,900</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--text-muted)]">Expense</span>
+                <span className="text-sm text-[var(--danger)]">$4,670</span>
+              </div>
+              <div className="h-2 rounded-full bg-[var(--surface-2)]">
+                <div className="h-2 w-3/5 rounded-full bg-[var(--accent)]"></div>
+              </div>
+              <p className="text-xs text-[var(--text-muted)]">
+                A quick preview of your real-time ledger once connected.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <div className="divider my-10"></div>
+
+        <section className="section-tint purple">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Why FlowLedger</h2>
+            <span className="text-xs text-[var(--text-muted)]">Core benefits</span>
+          </div>
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            <div className="glass p-6">
+              <p className="text-sm text-[var(--text-muted)]">Unified ledger</p>
+              <p className="mt-2 text-lg">Everything in one clean timeline.</p>
+            </div>
+            <div className="glass p-6">
+              <p className="text-sm text-[var(--text-muted)]">Fast edits</p>
+              <p className="mt-2 text-lg">Update, correct, and move on.</p>
+            </div>
+            <div className="glass p-6">
+              <p className="text-sm text-[var(--text-muted)]">Live totals</p>
+              <p className="mt-2 text-lg">Balance updates after each entry.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }

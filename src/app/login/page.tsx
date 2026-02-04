@@ -1,8 +1,9 @@
 ﻿"use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,31 +30,47 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <form
-        className="bg-white p-8 text-black rounded shadow"
-        onSubmit={handleSubmit}
-      >
-        <h1 className="text-xl font-bold mb-4">Login</h1>
-        <input
-          className="border p-2 w-full mb-4"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          className="border p-2 w-full mb-4"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button className="bg-blue-500 text-white px-4 py-2 rounded" type="submit">
-          Login
-        </button>
-        {error && <p className="text-red-500 mt-3">{error}</p>}
-      </form>
-    </div>
+    <main className="min-h-screen px-6 py-12 md:px-10">
+      <div className="container">
+        <section className="glass mx-auto max-w-md p-7 md:p-8">
+          <p className="tag">Welcome back</p>
+          <h1 className="mt-4 text-3xl font-semibold">Log in to FlowLedger</h1>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">Pick up where you left off.</p>
+
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <input
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 outline-none transition focus:border-[var(--accent)]"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 outline-none transition focus:border-[var(--accent)]"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <button
+              className="w-full rounded-xl bg-[var(--accent)] px-4 py-2.5 font-medium text-white transition hover:bg-[var(--accent-2)]"
+              type="submit"
+            >
+              Login
+            </button>
+
+            {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
+          </form>
+
+          <p className="mt-5 text-sm text-[var(--text-muted)]">
+            No account yet?{" "}
+            <Link href="/register" className="font-medium text-[var(--accent)]">
+              Create one
+            </Link>
+          </p>
+        </section>
+      </div>
+    </main>
   );
 }
